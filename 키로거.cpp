@@ -1,52 +1,76 @@
 #include <iostream>
+#include <stack>
+#include <vector>
 
 using namespace std;
 
-int main()
-{
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-    char stack_left[1000001]; //커서 이전 내용을 저장
-    char stack_right[1000001];//커서 이후 내용을 저장
-    int tc;
-    cin >> tc;
-    while (tc--)
-    {
-        string str;
-        cin >> str;
-        int top_left = 0, top_right = 0;
+string stackToString(stack<char>& left, stack<char>& right) {
+    // 두 개의 스택을 하나의 문자열로 합치는 함수
 
-        for (int i = 0; i < str.length(); ++i)
-        {
+    string password;
+    // 왼쪽 스택의 top 부터 하나씩 오른쪽 스택에 삽입
+    while (!left.empty()) {
+        right.push(left.top());
+        left.pop();
+    }
+    // 현재 오른쪽 스택의 top에는 password의 앞글자부터 저장된 상태
+    while (!right.empty()) {
+        password += right.top();
+        right.pop();
+    }
+	return password;
+}
 
-            switch (str[i])
-            {
-            case ('<'): // 커서를 왼쪽으로 이동 -> dq.left의 마지막 원소를 dq_right 앞에 삽입
-                if (top_left == 0)
-                    break;
-                stack_right[top_right++] = stack_left[--top_left];
-                break;
-            case ('>'): // 커서를 오른쪽으로 이동 -> stack_right의 처음 원소를 stack_left의 마지막에 삽입
-                if (top_right == 0)
-                    break;
-                stack_left[top_left++] = stack_right[--top_right];
-                break;
-            case ('-'): //현재 커서 앞에 있는 글자를 지운다.
-                if (top_left == 0)
-                    break;
-                --top_left;
-                break;
-            default: // 문자인 경우 커서보다 왼쪽에 입력하게 되므로 stack_left에 삽입
-                stack_left[top_left++] = str[i];
+string find_password(string log) {
+    
+    stack<char> left;   //커서 이전 내용을 저장
+    stack<char> right;  //커서 이후 내용을 저장
+
+    for (int i = 0; i < log.length(); i++) {
+        switch (log[i]) {
+        case '-':  //현재 커서 앞에 있는 글자 삭제
+            if (!left.empty()) {
+                left.pop();
             }
+            break;
+        case '<':  //커서를 왼쪽으로 이동
+            if (!left.empty()) {
+                right.push(left.top());
+                left.pop();
+            }
+            break;
+        case '>':  //커서를 오른쪽으로 이동
+            if (!right.empty()) {
+                left.push(right.top());
+                right.pop();
+            }
+            break;
+        default:  //문자인 경우, 입력을 하면 커서보다 왼쪽에 위치하므로 left에 삽입
+            left.push(log[i]);
         }
-        while (top_right) 
-        {
-            stack_left[top_left++] = stack_right[--top_right]; // stack_right의 마지막 원소부터 차례대로 stack_left에 삽입
-        }
-        stack_left[top_left] = '\0'; //문자열로 만들기 위해 마지막 원소를 '\0'로 삽입
-        cout << stack_left << '\n'; // 문자열 출력
+    }
+
+    string password = stackToString(left, right);
+    return password;
+}
+
+vector<string> solution(int t, vector<string>& log_list) {
+    vector<string> answer;
+    for (int i = 0; i < t; i++) {
+        answer.push_back(find_password(log_list[i]));
+    }
+    return answer;
+}
+
+	int tc;
+    //입력
+    cin >> tc;
+
+    // 출력
+    while(tc--) {
+        string s;
+        cin >> s;
+        cout << find_password(s) << '\n';
     }
     return 0;
 }
