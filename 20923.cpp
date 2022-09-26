@@ -1,65 +1,80 @@
 #include <iostream>
 #include <deque>
-
 using namespace std;
-// ±×¶ó¿îµå¿¡ ÀÖ´Â »ó´ë¹æ µ¦ (src1) °ú ÀÚ½ÅÀÇ µ¦ (src2)À» ÀÚ½ÅÀÇ µ¦(des)À» ÇÕÄ¡´Â ÇÔ¼ö
-void mergeCards(deque<int>& src1, deque<int>& src2, deque<int>& des) {
-	while (!src1.empty()) {
-		des.push_back(src1.back()); // »ó´ë¹æµ¦À» µÚÁı¾î¼­(Áï ¸Ç µÚºÎÅÍ) ¾Æ·¡·Î ÈüÄ¡±â
-		src1.pop_back();
-	}
-	while (!src2.empty()) {
-		des.push_back(src2.back());// ÀÚ½ÅÀÇ µ¦À» µÚÁı¾î¼­(Áï ¸Ç µÚºÎÅÍ) ¾Æ·¡·Î ÈüÄ¡±â
-		src2.pop_back();
-	}
+// srcì˜ í•©ì¹˜ëŠ” ì¹´ë“œ ë”ë¯¸ë¥¼ desì˜ ì¹´ë“œ ë”ë¯¸ë¡œ í•©ì¹˜ëŠ” í•¨ìˆ˜
+void mergeCards(deque<int> &src deque<int> &des)
+{
+    while (!src.empty())
+    {
+        des.push_back(src1.back()); // ìƒëŒ€ë°© ë±ì„ ë’¤ì§‘ì–´ì„œ(ë§¨ ë’¤ë¶€í„°) ì•„ë˜ë¡œ í•©ì¹˜ê¸°
+        src1.pop_back();
+    }
 }
+string playGame(int m, deque<int> &dodo, deque<int> &su)
+{
+    deque<int> do_gr; //ê·¸ë¼ìš´ë“œì— ìˆëŠ” ë„ë„ì˜ ì¹´ë“œ ë”ë¯¸
+    deque<int> su_gr; // ê·¸ë¼ìš´ë“œì— ìˆëŠ” ìˆ˜ì—°ì˜ ì¹´ë“œ ë”ë¯¸
+    bool flag = true; // trueì¼ ë•ŒëŠ” ë„ë„ì˜ ì°¨ë¡€, false ì¼ ë•ŒëŠ”  ìˆ˜ì—°ì˜ ì°¨ë¡€
+    while (m--)
+    {
+        if (flag)
+        {
+            do_gr.push_front(dodo.front()); // ë±ì— ìˆëŠ” ë§¨ ìœ„ì˜ ì¹´ë“œë¥¼ ê·¸ë¼ìš´ë“œì— ë†“ëŠ”ë‹¤
+            dodo.pop_front();
+            if (dodo.empty()){
+                return "su"; // ë±ì— ìˆëŠ” ì¹´ë“œì˜ ìˆ˜ê°€ 0ì´ ë˜ë©´ ìƒëŒ€ë°©ì´ ì¦‰ì‹œ ìŠ¹ë¦¬
+            }
+        }
+        else
+        {
+            su_gr.push_front(su.front()); /// ë±ì— ìˆëŠ” ë§¨ ìœ„ì˜ ì¹´ë“œë¥¼ ê·¸ë¼ìš´ë“œì— ë†“ëŠ”ë‹¤
+            su.pop_front();
+            if (su.empty()){
+                return "do"; // ë±ì— ìˆëŠ” ì¹´ë“œì˜ ìˆ˜ê°€ 0ì´ ë˜ë©´ ìƒëŒ€ë°©ì´ ì¦‰ì‹œ ìŠ¹ë¦¬
+            }
+        }
+        flag = !flag; //ìˆœì„œ ë°”ê¾¸ê¸°
+        //ë„ë„ì™€ ìˆ˜ì—°ì´ê°€ ì¢…ì„ ì¹  ìˆ˜ ìˆëŠ”ì§€ ê²€ì‚¬
+        //ë„ë„ê°€ ì¢…ì„ ì³¤ì„ ë•Œ
+        if (!do_gr.empty() && do_gr.front() == 5 || !su_gr.empty() && su_gr.front() == 5){
+            mergeCards(su_gr,dodo);
+            mergeCards(do_gr,dodo);
+        }
+        //ìˆ˜í˜„ì´ê°€ ì¢…ì„ ì³¤ì„ ë•Œ
+        if (!do_gr.empty() && !su_gr.empty() && do_gr.front() + su_gr.front() == 5){
+            mergeCards(do_gr, su);
+            mergeCards(su_gr, su);
+        }
+    }
 
-string playGame(int m, deque <int>& dodo, deque <int>& su) {
-	deque<int> do_gr; //±×¶ó¿îµå¿¡ ÀÖ´Â µµµµÀÇ Ä«µå ´õ¹Ì
-	deque<int> su_gr; // ±×¶ó¿îµå¿¡ ÀÖ´Â ¼ö¿¬ÀÇ Ä«µå ´õ¹Ì
-	bool flag = true; // trueÀÏ ¶§´Â µµµµÀÇ Â÷·Ê, false ÀÏ ¶§´Â  ¼ö¿¬ÀÇ Â÷·Ê
-
-	while (m--) {
-		if (flag) {
-			do_gr.push_front(dodo.front()); // µ¦¿¡ ÀÖ´Â ¸Ç À§ÀÇ Ä«µå¸¦ ±×¶ó¿îµå¿¡ ³õ´Â´Ù
-			dodo.pop_front();
-			if (dodo.empty()) return "su";// µ¦¿¡ ÀÖ´Â Ä«µåÀÇ ¼ö°¡ 0ÀÌ µÇ¸é »ó´ë¹æÀÌ Áï½Ã ½Â¸®
-		}
-		else {
-			su_gr.push_front(su.front()); /// µ¦¿¡ ÀÖ´Â ¸Ç À§ÀÇ Ä«µå¸¦ ±×¶ó¿îµå¿¡ ³õ´Â´Ù
-			su.pop_front();
-			if (su.empty()) return "do";// µ¦¿¡ ÀÖ´Â Ä«µåÀÇ ¼ö°¡ 0ÀÌ µÇ¸é »ó´ë¹æÀÌ Áï½Ã ½Â¸®
-		}
-		flag = !flag; //¼ø¼­ ¹Ù²Ù±â
-		//µµµµ¿Í ¼ö¿¬ÀÌ°¡ Á¾À» Ä¥ ¼ö ÀÖ´ÂÁö °Ë»ç
-		if (!do_gr.empty() && do_gr.front() == 5 || !su_gr.empty() && su_gr.front() == 5) mergeCards(su_gr, do_gr, dodo);
-		if (!do_gr.empty() && !su_gr.empty() && do_gr.front() + su_gr.front() == 5) mergeCards(do_gr, su_gr, su);
-	}
-
-	if (dodo.size() > su.size()) return "do";
-	else if (dodo.size() < su.size()) return "su";
-	return "dosu";
+    if (dodo.size() > su.size()){
+        return "do";
+    }
+    else if (dodo.size() < su.size()){
+        return "su";
+    }
+    return "dosu";
 }
 /*
-   *[¼ıÀÚ ÇÒ¸®°¥¸® °ÔÀÓ] : ±¸Çö, ½Ã¹Ä·¹ÀÌ¼Ç
-	 * µµµµ,¼ö¿¬ÀÌÀÇ µ¦°ú ±×¶ó¿îµå¿¡ ÀÖ´Â µµµµ,¼ö¿¬ÀÇ µ¦ ÃÑ 4°³ÀÇ µ¦À» °ü¸®ÇØÁÖ¸é µË´Ï´Ù
-	 * deque ¶óÀÌºê·¯¸®¸¦ »ç¿ëÇÏ¸é Ä«µå µ¦¿¡¼­ ÀÏ¾î³ª´Â ÀÏµéÀ» ½±°Ô ±¸ÇöÇÒ ¼ö ÀÖ½À´Ï´Ù
-	 * ¹®Á¦¿¡¼­ ÁÖ¾îÁø °ÔÀÓ ÁøÇà ¼ø¼­´ë·Î ±¸ÇöÇÏ¸é µË´Ï´Ù
-	 * ÁÖÀÇÇÒ Á¡Àº µµµµ ¶Ç´Â ¼ö¿¬ÀÌÀÇ µ¦¿¡ Ä«µå°¡ ¾ø´Â 'Áï½Ã' Á¾·á°¡ µÇ´Â °Í ÀÔ´Ï´Ù
-*/
-int main() {
-	int n, m;
-	cin >> n >> m;
-	deque<int> dodo;
-	deque<int> su;
-
-	for (int i = 0; i < n; i++) {
-		int a, b;
-		cin >> a >> b;
-		dodo.push_front(a);
-		su.push_front(b);
-	}
-
-	cout << playGame(m, dodo, su);
-	return 0;
+ *[ìˆ«ì í• ë¦¬ê°ˆë¦¬ ê²Œì„] : êµ¬í˜„, ì‹œë®¬ë ˆì´ì…˜
+ * ë„ë„,ìˆ˜ì—°ì´ì˜ ë±ê³¼ ê·¸ë¼ìš´ë“œì— ìˆëŠ” ë„ë„,ìˆ˜ì—°ì˜ ë± ì´ 4ê°œì˜ ë±ì„ ê´€ë¦¬í•´ì£¼ë©´ ë©ë‹ˆë‹¤
+ * deque ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì‚¬ìš©í•˜ë©´ ì¹´ë“œ ë±ì—ì„œ ì¼ì–´ë‚˜ëŠ” ì¼ë“¤ì„ ì‰½ê²Œ êµ¬í˜„í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤
+ * ë¬¸ì œì—ì„œ ì£¼ì–´ì§„ ê²Œì„ ì§„í–‰ ìˆœì„œëŒ€ë¡œ êµ¬í˜„í•˜ë©´ ë©ë‹ˆë‹¤
+ * ê²Œì„ ìˆœì„œì™€ ì¢…ë£Œ ì¡°ê±´ì„ ì£¼ì˜í•˜ì…”ì•¼ í•©ë‹ˆë‹¤
+ */
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+    deque<int> dodo;
+    deque<int> su;
+    for (int i = 0; i < n; i++)
+    {
+        int a, b;
+        cin >> a >> b;
+        dodo.push_front(a);
+        su.push_front(b);
+    }
+    cout << playGame(m, dodo, su);
+    return 0;
 }
